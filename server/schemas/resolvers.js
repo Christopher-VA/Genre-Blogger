@@ -53,6 +53,28 @@ const resolvers = {
 
       return { token, user };
     },
+    addPost: async (parent, { title, body, author }) => {
+      const post = await Post.create({ title, body, author });
+
+      await User.findOneAndUpdate(
+        { username: author },
+        { $addToSet: { posts: post._id }}
+      );
+
+      return post;
+    },
+    editPost: async (parent, { title, body }, context) => {
+      const updatedPost = await Post.findOByIdAndUpdate(
+        { _id: postId },
+        { $push: { title, body, author: context.user.username } },
+        { new: true }
+      )
+
+      return updatedPost;
+    },
+    removePost: async (parent, { postId }) => {
+      return Post.findOneAndDelete({ _id: postId });
+    }
   },
 };
 
