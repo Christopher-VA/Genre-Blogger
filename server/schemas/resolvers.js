@@ -9,17 +9,22 @@ const resolvers = {
     user: async (parent, { username }) => {
       return User.findOne({ username }).populate('posts');
     },
-    posts: async (parent, { username }) => {
+    posts: async (parent, { username, genreName }) => {
       const params = username ? { username } : {};
-      return Post.find(params).sort({ createdAt: -1 });
+      const params2 = genreName ? { genreName } : {};
+      return Post.find(params, params2).sort({ createdAt: -1 });
     },
     post: async (parent, { postId }) => {
       return Post.findOne({ _id: postId });
     },
+    postByAuthor: async (parent, { author }) => {
+      const params = author ? { author } : {};
+      return Post.find(params).sort({ createdAt: -1 });
+    },
     genres: async () => {
       return Genre.find().populate('posts');
     },
-    genre: async () => {
+    genre: async (parent, { genreName }) => {
       return Genre.findOne({ genreName }).populate('posts');
     },
     me: async (parent, args, context) => {

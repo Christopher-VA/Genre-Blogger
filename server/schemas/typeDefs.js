@@ -34,8 +34,9 @@ const typeDefs = `
     genres: [Genre]
     genre(genreName: String!): Genre
     posts: [Post]
-    post(author: String!): Post
-    postsInGenre(genre: String!): Post
+    post(_id: ID!): Post
+    postByAuthor(author: String!): [Post]
+    postsInGenre(genre: String!): [Post]
     me: User
   }
 
