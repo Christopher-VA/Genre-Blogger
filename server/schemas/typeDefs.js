@@ -9,7 +9,7 @@ const typeDefs = `
   }
 
   type Post {
-    _Id: ID!
+    _id: ID!
     title: String
     body: String!
     author: String!
@@ -18,7 +18,7 @@ const typeDefs = `
   }
 
   type Genre {
-    _Id: ID!
+    _id: ID!
     genreName: String
     posts: [Post]
   }
