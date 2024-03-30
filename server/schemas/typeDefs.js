@@ -13,8 +13,8 @@ const typeDefs = `
     title: String
     body: String!
     author: String!
-    genre: String
     createAt: String
+    genre: Genre
   }
 
   type Genre {
@@ -36,7 +36,6 @@ const typeDefs = `
     posts: [Post]
     post(_id: ID!): Post
     postByAuthor(author: String!): [Post]
-    postsInGenre(genre: String!): [Post]
     me: User
   }
 
@@ -44,7 +43,7 @@ const typeDefs = `
     addUser(username: String!, email: String!, password: String!): Auth
     login(email: String!, password: String!): Auth
     addPost(title: String!, body: String!, author: String!): Post
-    editPost(postId: ID!, title: String!, body: String!): Post
+    editPost(title: String!, body: String!, author: String!): Post
     removePost(postId: ID!): Post
   }
 `;
