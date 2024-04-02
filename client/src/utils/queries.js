@@ -1,42 +1,32 @@
 import { gql } from '@apollo/client';
 
+export const QUERY_USERS = gql`
+  query users {
+    users {
+      _id
+      username
+      email
+      password
+      posts {
+        _id
+        title
+        body
+        createdAt
+      }
+      createAt: String
+    }
+  }
+`;
 export const QUERY_USER = gql`
   query user($username: String!) {
     user(username: $username) {
       _id
       username
       email
-      thoughts {
+      posts {
         _id
-        thoughtText
-        createdAt
-      }
-    }
-  }
-`;
-
-export const QUERY_THOUGHTS = gql`
-  query getThoughts {
-    thoughts {
-      _id
-      thoughtText
-      thoughtAuthor
-      createdAt
-    }
-  }
-`;
-
-export const QUERY_SINGLE_THOUGHT = gql`
-  query getSingleThought($thoughtId: ID!) {
-    thought(thoughtId: $thoughtId) {
-      _id
-      thoughtText
-      thoughtAuthor
-      createdAt
-      comments {
-        _id
-        commentText
-        commentAuthor
+        title
+        body
         createdAt
       }
     }
@@ -49,12 +39,79 @@ export const QUERY_ME = gql`
       _id
       username
       email
-      thoughts {
+    }
+  }
+`;
+
+export const QUERY_POSTS = gql`
+  query posts {
+    posts {
+      _id
+      title
+      body
+      author
+      createAt
+      genre {
         _id
-        thoughtText
-        thoughtAuthor
+        genreName
+      }
+    }
+  }
+`
+
+export const QUERY_POST = gql`
+  query post {
+    post {
+      _id
+      title
+      body
+      author
+      createAt
+      genre {
+        _id
+        genreName
+      }
+    }
+  }
+`
+
+export const QUERY_GENRES = gql`
+  query genres {
+    genres {
+      _id
+      genreName
+    }
+  }
+`
+
+export const QUERY_GENRE = gql`
+  query genre {
+    genre {
+      _id
+      genreName
+      posts {
+        _id
+        title
+        body
+        author
         createdAt
       }
     }
   }
-`;
+`
+
+export const QUERY_POSTBYAUTHOR = gql`
+  query postbyauthor {
+    postbyauthor {
+      _id
+      title
+      body
+      author
+      createAt
+      genre {
+        _id
+        genreName
+      }
+    }
+  }
+`

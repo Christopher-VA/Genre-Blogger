@@ -24,32 +24,49 @@ export const ADD_USER = gql`
   }
 `;
 
-export const ADD_THOUGHT = gql`
-  mutation addThought($thoughtText: String!) {
-    addThought(thoughtText: $thoughtText) {
+export const ADD_POST = gql`
+  mutation addPost($title: String!, $body: String!, $author: String!) {
+    addPost(title: $title, body: $body, author: $author) {
       _id
-      thoughtText
-      thoughtAuthor
-      createdAt
-      comments {
+      title
+      body
+      author
+      createAt
+      genre {
         _id
-        commentText
+        genreName
       }
     }
   }
 `;
 
-export const ADD_COMMENT = gql`
-  mutation addComment($thoughtId: ID!, $commentText: String!) {
-    addComment(thoughtId: $thoughtId, commentText: $commentText) {
+export const EDIT_POST = gql`
+  mutation editPost($title: String!, $body: String!, $author: String!) {
+    editPost(title: $title, body: $body, author: $author) {
       _id
-      thoughtText
-      thoughtAuthor
-      createdAt
-      comments {
+      title
+      body
+      author
+      createAt
+      genre {
         _id
-        commentText
-        createdAt
+        genreName
+      }
+    }
+  }
+`;
+
+export const REMOVE_POST = gql`
+  mutation removePost($postId: ID!) {
+    removePost(postId: $postId) {
+      _id
+      title
+      body
+      author
+      createAt
+      genre {
+        _id
+        genreName
       }
     }
   }

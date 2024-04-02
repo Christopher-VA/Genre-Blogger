@@ -1,24 +1,35 @@
-const { User, Thought } = require('../models');
+const { User, Post } = require('../models');
 const { signToken, AuthenticationError } = require('../utils/auth');
 
 const resolvers = {
   Query: {
     users: async () => {
-      return User.find().populate('thoughts');
+      return User.find().populate('posts');
     },
     user: async (parent, { username }) => {
-      return User.findOne({ username }).populate('thoughts');
+      return User.findOne({ username }).populate('posts');
     },
-    thoughts: async (parent, { username }) => {
+    posts: async (parent, { username, genreName }) => {
       const params = username ? { username } : {};
-      return Thought.find(params).sort({ createdAt: -1 });
+      const params2 = genreName ? { genreName } : {};
+      return Post.find(params, params2).sort({ createdAt: -1 });
     },
-    thought: async (parent, { thoughtId }) => {
-      return Thought.findOne({ _id: thoughtId });
+    post: async (parent, { postId }) => {
+      return Post.findOne({ _id: postId });
+    },
+    postByAuthor: async (parent, { author }) => {
+      const params = author ? { author } : {};
+      return Post.find(params).sort({ createdAt: -1 });
+    },
+    genres: async () => {
+      return Genre.find().populate('posts');
+    },
+    genre: async (parent, { genreName }) => {
+      return Genre.findOne({ genreName }).populate('posts');
     },
     me: async (parent, args, context) => {
       if (context.user) {
-        return User.findOne({ _id: context.user._id }).populate('thoughts');
+        return User.findOne({ _id: context.user._id }).populate('posts');
       }
       throw AuthenticationError;
     },
@@ -47,72 +58,28 @@ const resolvers = {
 
       return { token, user };
     },
-    addThought: async (parent, { thoughtText }, context) => {
-      if (context.user) {
-        const thought = await Thought.create({
-          thoughtText,
-          thoughtAuthor: context.user.username,
-        });
+    addPost: async (parent, { title, body, author }) => {
+      const post = await Post.create({ title, body, author });
 
-        await User.findOneAndUpdate(
-          { _id: context.user._id },
-          { $addToSet: { thoughts: thought._id } }
-        );
+      await User.findOneAndUpdate(
+        { username: author },
+        { $addToSet: { posts: post._id }}
+      );
 
-        return thought;
-      }
-      throw AuthenticationError;
+      return post;
     },
-    addComment: async (parent, { thoughtId, commentText }, context) => {
-      if (context.user) {
-        return Thought.findOneAndUpdate(
-          { _id: thoughtId },
-          {
-            $addToSet: {
-              comments: { commentText, commentAuthor: context.user.username },
-            },
-          },
-          {
-            new: true,
-            runValidators: true,
-          }
-        );
-      }
-      throw AuthenticationError;
-    },
-    removeThought: async (parent, { thoughtId }, context) => {
-      if (context.user) {
-        const thought = await Thought.findOneAndDelete({
-          _id: thoughtId,
-          thoughtAuthor: context.user.username,
-        });
+    editPost: async (parent, { title, body }, context) => {
+      const updatedPost = await Post.findOByIdAndUpdate(
+        { _id: postId },
+        { $push: { title, body, author: context.user.username } },
+        { new: true }
+      )
 
-        await User.findOneAndUpdate(
-          { _id: context.user._id },
-          { $pull: { thoughts: thought._id } }
-        );
-
-        return thought;
-      }
-      throw AuthenticationError;
+      return updatedPost;
     },
-    removeComment: async (parent, { thoughtId, commentId }, context) => {
-      if (context.user) {
-        return Thought.findOneAndUpdate(
-          { _id: thoughtId },
-          {
-            $pull: {
-              comments: {
-                _id: commentId,
-                commentAuthor: context.user.username,
-              },
-            },
-          },
-          { new: true }
-        );
-      }
-      throw AuthenticationError;
-    },
+    removePost: async (parent, { postId }) => {
+      return Post.findOneAndDelete({ _id: postId });
+    }
   },
 };
 
